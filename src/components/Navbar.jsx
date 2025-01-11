@@ -32,7 +32,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     toggleDrawer(false);
-    window.location.href = LOGOUT_URL
+    window.location.href = LOGOUT_URL;
   };
 
   const handleLogin = () => {
@@ -41,6 +41,10 @@ const Navbar = () => {
 
   const handleGoHome = () => {
     navigate('/');
+  };
+
+  const handleGoBoard = () => {
+    navigate('/board');
   };
 
   const list = () => (
@@ -80,12 +84,23 @@ const Navbar = () => {
           <Typography
             variant="h6"
             component="div"
-            sx={{ cursor: 'pointer' }}
+            sx={{ cursor: 'pointer', marginRight: 2 }}
             onClick={handleGoHome}
           >
             요피랜드
           </Typography>
+
+          <Typography
+            variant="subtitle1"
+            component="div"
+            sx={{ cursor: 'pointer', marginRight: 2 }}
+            onClick={handleGoBoard}
+          >
+            자유게시판
+          </Typography>
+
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}></Typography>
+
           {accessToken ? (
             <AccountCircle
               style={{ cursor: 'pointer' }}
