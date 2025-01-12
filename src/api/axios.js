@@ -4,7 +4,7 @@ import {setAccessToken, logout} from "../slices/authSlice";
 import {showAlert} from "../slices/alertSlice.js";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL + '/api',
   headers: {
     "Content-Type": "application/json",
   },

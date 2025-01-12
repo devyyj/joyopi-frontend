@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Navbar from "./components/Navbar.jsx";
 import MyInfo from "./pages/MyInfo.jsx";
+import FreeBoard from "./pages/FreeBoard.jsx";
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -45,6 +46,7 @@ const AppContent = () => {
           <Route path="/" element={<Home/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/myinfo" element={<MyInfo/>}/>
+          <Route path="/freeboard" element={<FreeBoard/>}/>
         </Routes>
       </Router>
     </>

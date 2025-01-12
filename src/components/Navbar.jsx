@@ -44,7 +44,7 @@ const Navbar = () => {
   };
 
   const handleGoBoard = () => {
-    navigate('/board');
+    navigate('/freeboard');
   };
 
   const list = () => (
