@@ -7,8 +7,23 @@ import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#F5F5F5'
-    }
+      main: "#009688", // Teal
+      light: "#52c7b8",
+      dark: "#00675b",
+    },
+    secondary: {
+      main: "#607d8b", // Blue Grey
+      light: "#8eacbb",
+      dark: "#34515e",
+    },
+    background: {
+      default: "#fafafa", // Extra Light Grey
+      paper: "#ffffff", // White
+    },
+    text: {
+      primary: "#212121",
+      secondary: "#757575",
+    },
   },
   typography: {
     fontFamily: '"Nanum Gothic", sans-serif', // Nanum Gothic 적용
