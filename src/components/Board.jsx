@@ -20,7 +20,7 @@ const Board = ({ posts, fetchMorePosts, hasMore, onEditPost, onDeletePost }) => 
   };
 
   const handleEditPost = () => {
-    if (onEditPost) onEditPost(selectedPost);
+    if (onEditPost) onEditPost(selectedPost.id);
     handleMenuClose();
   };
 

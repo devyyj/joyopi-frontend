@@ -33,7 +33,9 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
-      "indent": ["error", 2, { "SwitchCase": 1 }]
+      "indent": ["error", 2, { "SwitchCase": 1 }],
+      // prop-types 규칙 끄기
+      'react/prop-types': 'off',
     },
   },
 ]

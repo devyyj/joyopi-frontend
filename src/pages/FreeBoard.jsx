@@ -6,29 +6,29 @@ import PostInput from "../components/PostInput";
 import Board from "../components/Board";
 
 const FreeBoard = () => {
-  const [posts, setPosts] = useState([]); // 게시글 상태 관리
-  const [hasMore, setHasMore] = useState(true); // 더 불러올 데이터 여부
-  const [page, setPage] = useState(0); // 현재 페이지
+  const [posts, setPosts] = useState([]);
+  const [editingPost, setEditingPost] = useState(null); // 수정 중인 게시글
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
   const accessToken = useSelector((state) => state.auth.accessToken);
-  const isFetching = useRef(false); // API 호출 중 여부 추적
+  const isFetching = useRef(false);
 
-  // 게시글 데이터 가져오는 함수
   const fetchPosts = async (reset = false) => {
     try {
-      if (isFetching.current) return; // 이미 호출 중이면 중단
+      if (isFetching.current) return;
       isFetching.current = true;
 
       const response = await axios.get("/freeboard/posts/infinite", {
         params: {
-          page: reset ? 0 : page, // 초기화 여부에 따라 페이지 설정
+          page: reset ? 0 : page,
           size: 10,
         },
       });
 
       const newPosts = response.data;
       setPosts((prevPosts) => (reset ? newPosts : [...prevPosts, ...newPosts]));
-      setHasMore(newPosts.length > 0); // 더 불러올 데이터가 있는지 여부 설정
-      setPage((prevPage) => (reset ? 1 : prevPage + 1)); // 초기화 시 페이지를 1로 설정
+      setHasMore(newPosts.length > 0);
+      setPage((prevPage) => (reset ? 1 : prevPage + 1));
 
       isFetching.current = false;
     } catch (error) {
@@ -37,41 +37,60 @@ const FreeBoard = () => {
     }
   };
 
-  // 게시글 등록 함수
   const handlePostSubmit = async (post) => {
     try {
-      console.log("새 게시글:", post);
-      await axios.post("/freeboard/posts", post); // 게시글 서버 전송
-      fetchPosts(true); // 데이터 초기화 및 갱신
+      if (post.id) {
+        // 수정 요청
+        await axios.put(`/freeboard/posts/${post.id}`, post);
+        setEditingPost(null); // 수정 완료 후 초기화
+      } else {
+        // 새 게시글 작성
+        await axios.post("/freeboard/posts", post);
+      }
+      fetchPosts(true);
     } catch (error) {
       console.error("Error submitting post:", error);
     }
   };
 
-  const handleEditPost = (post) => {
-    console.log("Editing post:", post);
-    // 수정 로직 처리
+  const handleEditPost = (postId) => {
+    const postToEdit = posts.find((post) => post.id === postId);
+    setEditingPost(postToEdit); // 수정 모드로 설정
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPost(null); // 수정 취소
   };
 
   const handleDeletePost = async (postId) => {
-    await axios.delete("/freeboard/posts/" + postId);
-    fetchPosts(true); // 데이터 초기화 및 갱신
+    try {
+      await axios.delete(`/freeboard/posts/${postId}`);
+      fetchPosts(true);
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
   };
 
-  // 초기 데이터 로딩
   useEffect(() => {
-    fetchPosts(true); // 처음에 데이터를 불러오도록 설정
+    fetchPosts(true);
   }, []);
 
   return (
     <>
-      {accessToken ? <PostInput onSubmit={handlePostSubmit}/> : null}
+      {accessToken ? (
+        <PostInput
+          onSubmit={handlePostSubmit}
+          editingPost={editingPost}
+          onCancelEdit={handleCancelEdit}
+        />
+      ) : null}
       <Board
         posts={posts}
         fetchMorePosts={fetchPosts}
         hasMore={hasMore}
         onEditPost={handleEditPost}
-        onDeletePost={handleDeletePost}/>
+        onDeletePost={handleDeletePost}
+      />
     </>
   );
 };

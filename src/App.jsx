@@ -4,7 +4,7 @@ import {Provider, useDispatch} from 'react-redux';
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import store from './store';
 import axios from './api/axios'; // Axios 기본 설정 파일
-import {setAccessToken} from './slices/authSlice'; // 액세스 토큰 설정 액션
+import {setAccessToken, setUser} from './slices/authSlice'; // 액세스 토큰 설정 액션
 import AlertNotification from './components/AlertNotification.jsx';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -22,8 +22,13 @@ const AppContent = () => {
         const response = await axios.get('/auth/reissue-token');
         if (response.data && response.data.access_token) {
           dispatch(setAccessToken(response.data.access_token)); // Redux에 저장
+          const userInfo = await axios.get("/users/me");
+          const user = userInfo.data; // 받아온 사용자 정보
+          // 사용자 정보를 Redux에 저장
+          dispatch(setUser(user));
         }
       } catch (error) {
+        console.log(error)
         console.info('Browser refresh and failed to reissue access token:', error.response.data.message);
       } finally {
         setIsInitialized(true); // 초기화 완료
