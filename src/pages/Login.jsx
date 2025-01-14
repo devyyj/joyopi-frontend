@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {useDispatch} from "react-redux";
-import {setAccessToken} from "../slices/authSlice";
-import {Button, Box, Typography, CircularProgress, Backdrop} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setAccessToken, setUser } from "../slices/authSlice"; // setUser 액션 임포트
+import { Button, Box, Typography, CircularProgress, Backdrop } from "@mui/material";
 import axios from '../api/axios.js'; // axios 임포트
 
 const Login = () => {
@@ -27,6 +27,7 @@ const Login = () => {
         // 서버에서 로그아웃 요청 (refreshToken 삭제)
         await axios.delete('/auth/refresh-token');
         dispatch(setAccessToken(null)); // Redux에서 액세스 토큰 초기화
+        dispatch(setUser(null)); // 사용자 정보 초기화
         navigate('/');
       }
 
@@ -34,9 +35,19 @@ const Login = () => {
       if (token) {
         // 액세스 토큰이 있으면 Redux에 저장
         dispatch(setAccessToken(token));
-
-        // 메인 페이지로 리다이렉트
-        navigate('/');
+        // 사용자 정보 받아오기
+        try {
+          const response = await axios.get("/users/me");
+          const user = response.data; // 받아온 사용자 정보
+          // 사용자 정보를 Redux에 저장
+          dispatch(setUser(user));
+          // 메인 페이지로 리다이렉트
+          navigate('/');
+        } catch (error) {
+          console.error("Failed to fetch user data", error);
+          // 에러 처리 (예: 로그인 페이지로 리디렉션)
+          navigate('/login');
+        }
       }
 
       setOpenModal(false); // 모달 닫기
@@ -66,8 +77,8 @@ const Login = () => {
             justifyContent: 'center',
           }}
         >
-          <CircularProgress size={50}/>
-          <Typography variant="h6" sx={{mt: 2}}>
+          <CircularProgress size={50} />
+          <Typography variant="h6" sx={{ mt: 2 }}>
             처리 중입니다...
           </Typography>
         </Box>
@@ -79,7 +90,7 @@ const Login = () => {
           로그인 페이지
         </Typography>
         {/* 카카오 로그인 버튼 */}
-        <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2}}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
           <Button
             variant="contained"
             color="warning"
