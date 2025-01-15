@@ -5,6 +5,10 @@ const PostInput = ({ onSubmit, editingPost, onCancelEdit }) => {
   const [title, setTitle] = useState(editingPost ? editingPost.title : "");
   const [content, setContent] = useState(editingPost ? editingPost.content : "");
   const [expanded, setExpanded] = useState(!!editingPost);
+  const [titleError, setTitleError] = useState(false);
+  const [contentError, setContentError] = useState(false);
+  const [titleHelperText, setTitleHelperText] = useState("");
+  const [contentHelperText, setContentHelperText] = useState("");
 
   useEffect(() => {
     if (editingPost) {
@@ -21,15 +25,39 @@ const PostInput = ({ onSubmit, editingPost, onCancelEdit }) => {
     setTitle("");
     setContent("");
     setExpanded(false);
+    setTitleError(false);
+    setContentError(false);
+    setTitleHelperText("");
+    setContentHelperText("");
     if (onCancelEdit) onCancelEdit(); // 수정 취소 시 호출
   };
 
   const handleSubmit = () => {
-    if (title.trim() && content.trim()) {
+    let valid = true;
+
+    // 제목 50자 이하, 내용 1000자 이하로 제한
+    if (title.length > 50) {
+      setTitleError(true);
+      setTitleHelperText("제목은 50자 이내로 입력해주세요.");
+      valid = false;
+    } else {
+      setTitleError(false);
+      setTitleHelperText("");
+    }
+
+    if (content.length > 1000) {
+      setContentError(true);
+      setContentHelperText("내용은 1000자 이내로 입력해주세요.");
+      valid = false;
+    } else {
+      setContentError(false);
+      setContentHelperText("");
+    }
+
+    // 유효성 검사 통과 시에만 제출
+    if (valid && title && content) {
       onSubmit({ title, content, id: editingPost?.id });
       handleClear();
-    } else {
-      alert("제목과 내용을 입력하세요.");
     }
   };
 
@@ -58,6 +86,9 @@ const PostInput = ({ onSubmit, editingPost, onCancelEdit }) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             margin="normal"
+            slotProps={{ htmlInput: { maxLength: 50 } }} // 제목 50자 제한 (slotProps 사용)
+            error={titleError} // 제목 오류 여부
+            helperText={titleHelperText} // 제목 오류 메시지
           />
           <TextField
             fullWidth
@@ -67,6 +98,9 @@ const PostInput = ({ onSubmit, editingPost, onCancelEdit }) => {
             margin="normal"
             multiline
             rows={4}
+            slotProps={{ htmlInput: { maxLength: 1000 } }} // 내용 1000자 제한 (slotProps 사용)
+            error={contentError} // 내용 오류 여부
+            helperText={contentHelperText} // 내용 오류 메시지
           />
           <Box style={{ display: "flex", justifyContent: "flex-end", marginTop: "16px" }}>
             <Button
