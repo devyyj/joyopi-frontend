@@ -1,7 +1,7 @@
 import axios from "axios";
 import store from "../store"; // Redux 스토어
-import {setAccessToken, logout} from "../slices/authSlice";
-import {showAlert} from "../slices/alertSlice.js";
+import {logout, setAccessToken} from "../slices/authSlice";
+import {alert} from "../slices/alertSlice.js";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL + '/api',
@@ -58,7 +58,7 @@ axiosInstance.interceptors.response.use(
     // 기본 에러 응답 처리
     if (originalRequest.url !== "/auth/reissue-token") {
       // 에러 메시지 생성
-      store.dispatch(showAlert({message: error.response.data.message || '알 수 없는 오류 발생', severity: 'error'}));
+      store.dispatch(alert.error(error.response.data.message))
     }
     return Promise.reject(error);
   }

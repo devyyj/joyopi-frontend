@@ -122,7 +122,8 @@ const Navbar = () => {
         anchor="right"
         open={drawerOpen}
         onClose={() => toggleDrawer(false)}
-        aria-hidden={drawerOpen ? 'false' : 'true'}
+        // aria-hidden={drawerOpen ? 'false' : 'true'}
+        inert
       >
         {list()}
       </Drawer>

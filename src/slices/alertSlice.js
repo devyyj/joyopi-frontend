@@ -19,5 +19,13 @@ const alertSlice = createSlice({
   },
 });
 
+// 래핑 함수 추가
+export const alert = {
+  success: (message) => showAlert({ message, severity: 'success' }),
+  error: (message) => showAlert({ message, severity: 'error' }),
+  info: (message) => showAlert({ message, severity: 'info' }),
+  warning: (message) => showAlert({ message, severity: 'warning' }),
+};
+
 export const { showAlert, hideAlert } = alertSlice.actions;
 export default alertSlice.reducer;
