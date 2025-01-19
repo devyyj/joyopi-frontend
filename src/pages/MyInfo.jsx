@@ -17,10 +17,10 @@ const MyInfo = () => {
 
   // 닉네임 변경 API 호출
   const handleNicknameChange = async () => {
-    if (nickName.length < 2 || nickName.length > 10 || /\s/.test(nickName)) {
+    if (newNickName.length < 2 || newNickName.length > 10 || /\s/.test(newNickName)) {
       return; // 조건을 만족하지 않으면 API 호출 방지
     }
-    await axios.patch("/users/me", {nickName: nickName});
+    await axios.patch("/users/me", {nickName: newNickName});
     setNickName(newNickName);
     dispatch(alert.success("닉네임이 성공적으로 변경되었습니다."))
     setIsEditing(false); // 편집 모드 종료
