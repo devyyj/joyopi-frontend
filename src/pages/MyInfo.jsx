@@ -12,23 +12,26 @@ const MyInfo = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // 닉네임 편집 모드 상태
   const user = useSelector((state) => state.auth.user); // Redux에서 사용자 정보 가져오기
-  const [nickName, setNickName] = useState(user.nickName); // 현재 닉네임 상태
-  const [newNickName, setNewNickName] = useState(user.nickName); // 새로운 닉네임 상태
+  console.log(user)
+  const [nickname, setNickname] = useState(user.nickname); // 현재 닉네임 상태
+  const [newNickname, setNewNickname] = useState(user.nickname); // 새로운 닉네임 상태
 
   // 닉네임 변경 API 호출
   const handleNicknameChange = async () => {
-    if (newNickName.length < 2 || newNickName.length > 10 || /\s/.test(newNickName)) {
+    if (newNickname.length < 2 || newNickname.length > 10 || /\s/.test(newNickname)) {
       return; // 조건을 만족하지 않으면 API 호출 방지
     }
-    await axios.patch("/users/me", {nickName: newNickName});
-    setNickName(newNickName);
+    await axios.patch("/users/me", {nickname: newNickname});
+    setNickname(newNickname);
+    // dispatch(setUser({user}));
+    // todo setUser를 userid랑 usernickname으로 나누기. log 지우기ㅅ
     dispatch(alert.success("닉네임이 성공적으로 변경되었습니다."))
     setIsEditing(false); // 편집 모드 종료
   };
 
   const handleNicknameCancel = () => {
     setIsEditing(false);
-    setNewNickName(user.nickName); // 닉네임 초기화
+    setNewNickname(user.nickname); // 닉네임 초기화
   };
 
   const handleConfirmDeletion = async () => {
@@ -48,7 +51,7 @@ const MyInfo = () => {
 
       {/* 현재 닉네임 표시 */}
       <Box sx={{marginBottom: 2}}>
-        <Typography variant="h6">현재 닉네임: {nickName}</Typography>
+        <Typography variant="h6">현재 닉네임: {nickname}</Typography>
       </Box>
 
       {/* 닉네임 수정 모달 */}
@@ -69,8 +72,8 @@ const MyInfo = () => {
           <TextField
             label="닉네임"
             variant="outlined"
-            value={newNickName}
-            onChange={(e) => setNewNickName(e.target.value)}
+            value={newNickname}
+            onChange={(e) => setNewNickname(e.target.value)}
             slotProps={{htmlInput: {maxLength: 10}}}
             sx={{width: "100%", marginTop: 2}}
           />
@@ -87,10 +90,10 @@ const MyInfo = () => {
             color="primary"
             onClick={handleNicknameChange}
             disabled={
-              newNickName.length < 2 || // 닉네임 길이가 2 미만
-              newNickName.length > 10 || // 닉네임 길이가 10 초과
-              /\s/.test(newNickName) || // 닉네임에 공백 포함
-              newNickName === nickName // 현재 닉네임과 수정하려는 닉네임이 동일
+              newNickname.length < 2 || // 닉네임 길이가 2 미만
+              newNickname.length > 10 || // 닉네임 길이가 10 초과
+              /\s/.test(newNickname) || // 닉네임에 공백 포함
+              newNickname === nickname // 현재 닉네임과 수정하려는 닉네임이 동일
             } // 버튼 비활성화 조건 추가
           >
             저장

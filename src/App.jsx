@@ -24,6 +24,7 @@ const AppContent = () => {
           dispatch(setAccessToken(response.data.access_token)); // Redux에 저장
           const userInfo = await axios.get("/users/me");
           const user = userInfo.data; // 받아온 사용자 정보
+          console.log(user)
           // 사용자 정보를 Redux에 저장
           dispatch(setUser(user));
         }
