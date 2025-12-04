@@ -1,21 +1,18 @@
-// src/main.jsx
+// src/main.jsx 예시
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import theme from './theme/theme'; // 작성하신 theme.js import
 
-import {StrictMode} from 'react'
-import {createRoot} from 'react-dom/client'
-// MUI ThemeProvider, CssBaseline import
-import {ThemeProvider} from '@mui/material/styles'
-import CssBaseline from '@mui/material/CssBaseline'
-
-import theme from './theme/theme.js' // 정의한 테마 파일 import
-import App from "./App.jsx";
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    {/* 1. CssBaseline: 모든 브라우저에서 CSS를 일관되게 초기화합니다. (가장 먼저 적용) */}
-    <CssBaseline/>
-    {/* 2. ThemeProvider: 하위 모든 MUI 컴포넌트에 테마 정보를 제공합니다. */}
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    {/* 1. 테마 공급 */}
     <ThemeProvider theme={theme}>
-      <App/>
+      {/* 2. CSS 초기화 및 전역 스타일(배경색, 폰트) 적용 - 필수! */}
+      <CssBaseline />
+      <App />
     </ThemeProvider>
-  </StrictMode>,
-)
+  </React.StrictMode>,
+);

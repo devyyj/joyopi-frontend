@@ -15,7 +15,7 @@ function Header() {
         {/* 로고/서비스명 */}
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           {/* component="div"로 사용하여 의미론적 태그를 유지하면서 Typography 스타일을 적용합니다. */}
-          Joyopi Service
+          요피랜드
         </Typography>
 
         {/* 네비게이션 버튼들 */}
