@@ -32,7 +32,7 @@ const theme = createTheme({
     },
     background: {
       default: '#FFFFFF', // 모노크롬 테마는 배경을 깔끔하게 흰색/검정으로 둡니다.
-      paper: '#F3F4F6',   // 카드 배경은 아주 연한 회색으로 미세한 구분감만 줍니다.
+      paper: '#FFFFFF',   // [변경] 카드/메뉴 배경을 순수한 흰색으로 설정하여 촌스러운 느낌을 제거 (원래: #F3F4F6)
     },
     text: {
       primary: '#111111', // 아주 진한 검정 (완전 #000보다는 아주 조금 뺌)
@@ -51,6 +51,7 @@ const theme = createTheme({
           border: '1px solid transparent', // 테두리 공간 확보
           '&:hover': {
             boxShadow: 'none', // 호버 시에도 그림자 제거
+            backgroundColor: 'transparent', // [변경] 호버 시 배경색 변화를 투명하게 막아 촌스러운 효과를 제거
           },
         },
         // 'outlined' 버튼 스타일 커스텀

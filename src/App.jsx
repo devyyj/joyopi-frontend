@@ -2,11 +2,14 @@
 
 import React from 'react';
 import { Box } from '@mui/material';
+import { Routes, Route } from 'react-router-dom'; // Routes, Route import
 
 // 컴포넌트 및 페이지 import
-import Header from './components/Header.jsx';
+import Header from './components/Header.jsx'; //
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx'; // 메인 페이지
+import LottoResearch from './pages/LottoResearch.jsx'; // 새 페이지 import
+import NicknameResearch from './pages/NicknameResearch.jsx'; // 새 페이지 import
 
 /**
  * @title 최상위 애플리케이션 컴포넌트
@@ -21,9 +24,18 @@ function App() {
       <Header />
 
       {/* 2. Main Content 영역 (페이지가 렌더링되는 곳) */}
-      {/* 현재는 Home 페이지만 렌더링하지만, 나중에 라우터가 들어갈 위치입니다. */}
       <Box component="main" sx={{ flexGrow: 1 }}>
-        <Home />
+        {/* 라우팅을 사용하여 경로에 따라 다른 페이지를 렌더링합니다. */}
+        <Routes>
+          {/* 메인 화면 */}
+          <Route path="/" element={<Home />} />
+          {/* 로또 번호 생성기 화면 */}
+          <Route path="/lab/lotto" element={<LottoResearch />} />
+          {/* 닉네임 생성기 화면 */}
+          <Route path="/lab/nickname" element={<NicknameResearch />} />
+
+          {/* 매칭되는 경로가 없을 때의 처리는 필요에 따라 추가합니다. */}
+        </Routes>
       </Box>
 
       {/* 3. Footer 영역 */}
