@@ -1,0 +1,88 @@
+# .github/workflows/deploy.yml
+name: Frontend CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+env:
+  # 환경 변수는 GitHub Secrets에 등록된 값을 사용해야 합니다.
+  DOCKER_REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
+  EC2_HOST: ${{ secrets.EC2_HOST }}
+  EC2_USER: ec2-user
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PROJECT_DIR: /home/ec2-user/frontend # EC2 서버의 프로젝트 디렉토리 경로
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 1. 브랜치에 따른 이미지 태그 설정
+      - name: Set deployment tag
+        id: vars
+        run: |
+          BRANCH_NAME=${{ github.ref_name }}
+          if [ "$BRANCH_NAME" == "master" ]; then
+            echo "IMAGE_TAG=prod" >> $GITHUB_OUTPUT
+          elif [ "$BRANCH_NAME" == "develop" ]; then
+            echo "IMAGE_TAG=dev" >> $GITHUB_OUTPUT
+          fi
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      # 2. DockerHub 로그인
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 3. Docker 이미지 빌드 및 레지스트리 푸시
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.DOCKER_REGISTRY_USER }}/joyopi-frontend:${{ steps.vars.outputs.IMAGE_TAG }}
+          file: ./Dockerfile
+
+      # 4. EC2 배포 (SSH 접속 및 스크립트 실행)
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ env.PROJECT_DIR }}
+            
+            # EC2의 docker-compose에서 사용할 환경 변수 설정
+            echo "DOCKER_REGISTRY_USER=${{ env.DOCKER_REGISTRY_USER }}" > .env
+            
+            TAG="${{ steps.vars.outputs.IMAGE_TAG }}"
+            
+            if [ "$TAG" == "prod" ]; then
+              SERVICE_NAME="frontend-prod"
+            elif [ "$TAG" == "dev" ]; then
+              SERVICE_NAME="frontend-dev"
+            else
+              echo "Unknown branch tag: $TAG"
+              exit 1
+            fi
+            
+            echo "Deploying $SERVICE_NAME with tag $TAG"
+            
+            # 새 이미지 다운로드, 해당 서비스만 컨테이너 재생성
+            docker-compose pull $SERVICE_NAME
+            docker-compose up -d --no-deps $SERVICE_NAME
+            
+            # Nginx 컨테이너에게 설정 리로드 명령
+            docker exec nginx-ssl-web nginx -s reload
+            
+            # 사용하지 않는 Docker 이미지 정리
+            docker system prune -f
