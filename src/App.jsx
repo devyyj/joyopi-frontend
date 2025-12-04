@@ -2,7 +2,7 @@ function App() {
   return (
     // 개발 시작을 위한 최소한의 컴포넌트만 남깁니다.
     <div style={{padding: '20px'}}>
-      <h1>여기는 joyopi.com</h1>
+      <h1>여기는 dev.joyopi.com</h1>
     </div>
   );
 }
