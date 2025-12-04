@@ -61,7 +61,7 @@ jobs:
           script: |
             cd ${{ env.PROJECT_DIR }}
             
-            # EC2의 docker-compose에서 사용할 환경 변수 설정
+            # EC2의 docker compose에서 사용할 환경 변수 설정
             echo "DOCKER_REGISTRY_USER=${{ env.DOCKER_REGISTRY_USER }}" > .env
             
             TAG="${{ steps.vars.outputs.IMAGE_TAG }}"
@@ -78,8 +78,8 @@ jobs:
             echo "Deploying $SERVICE_NAME with tag $TAG"
             
             # 새 이미지 다운로드, 해당 서비스만 컨테이너 재생성
-            docker-compose pull $SERVICE_NAME
-            docker-compose up -d --no-deps $SERVICE_NAME
+            docker compose pull $SERVICE_NAME
+            docker compose up -d --no-deps $SERVICE_NAME
             
             # Nginx 컨테이너에게 설정 리로드 명령
             docker exec nginx-ssl-web nginx -s reload
