@@ -19,5 +19,7 @@ FROM nginx:alpine AS final
 # Nginx의 기본 설정 파일을 제거
 RUN rm /etc/nginx/conf.d/default.conf
 
+COPY ./nginx/custom.conf /etc/nginx/conf.d/default.conf
+
 # 빌드 결과물(dist 폴더)을 Nginx의 기본 서비스 경로에 복사
 COPY --from=build /app/dist /usr/share/nginx/html
