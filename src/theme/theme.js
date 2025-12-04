@@ -3,7 +3,6 @@ import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
   typography: {
-    // Pretendard: 힙한 테마일수록 폰트가 깔끔해야 합니다.
     fontFamily: [
       '"Pretendard"',
       '-apple-system',
@@ -13,73 +12,85 @@ const theme = createTheme({
       'sans-serif',
     ].join(','),
     button: {
-      fontWeight: 700, // 버튼 텍스트를 두껍게 하여 임팩트를 줍니다.
+      fontWeight: 700, // 버튼 텍스트 강조 (가독성/UX)
     },
   },
   palette: {
-    // 라이트/다크 모드에 따른 자동 색상 전환
-    mode: 'light', // 기본값 (상태 관리에 따라 dark로 변경 가능)
+    mode: 'light',
 
     primary: {
-      main: '#D2F802', // [핵심] 쨍한 애시드 라임 (형광 연두)
-      light: '#E6FF50', // 호버 시 더 밝게
-      dark: '#A6C700',  // 클릭 시 약간 어둡게
-      contrastText: '#111111', // 형광 배경 위에는 무조건 '검정' 글씨여야 가독성이 나옵니다.
+      main: '#D2F802', // 애시드 라임 (핵심 액션/강조 색상)
+      light: '#E6FF50', // 살짝 밝게
+      dark: '#A6C700', // 살짝 어둡게 (호버 시 사용 가능)
+      contrastText: '#111111', // 대비되는 텍스트 색상 (검은색)
     },
     secondary: {
-      main: '#111111', // 보조 버튼은 블랙(라이트모드 기준)으로 시크하게 처리
-      contrastText: '#FFFFFF',
+      main: '#111111', // 블랙 (주요 텍스트, 아이콘 등)
+      contrastText: '#FFFFFF', // 흰색
     },
+    // [강화] 깔끔한 모노크롬 디자인 유지를 위한 배경색 정의
     background: {
-      default: '#FFFFFF', // 모노크롬 테마는 배경을 깔끔하게 흰색/검정으로 둡니다.
-      paper: '#FFFFFF',   // [변경] 카드/메뉴 배경을 순수한 흰색으로 설정하여 촌스러운 느낌을 제거 (원래: #F3F4F6)
+      default: '#FFFFFF', // 앱의 주 배경색
+      paper: '#F7F7F7', // 카드/모달 등 컴포넌트 배경을 약간 톤 다운하여 대비 효과 (선택 사항: 원하시면 #FFFFFF 유지)
     },
+    // [강화] 텍스트 가독성 최적화
     text: {
-      primary: '#111111', // 아주 진한 검정 (완전 #000보다는 아주 조금 뺌)
-      secondary: '#6B7280', // 회색
+      primary: '#111111', // 가장 중요한 텍스트
+      secondary: '#4B5563', // 보조 텍스트 (기존보다 조금 더 진하게 하여 가독성 향상)
+    },
+    // [추가] 회색 톤을 추가하여 UI 요소에 조화롭게 사용
+    grey: {
+      50: '#F9FAFB',
+      100: '#F3F4F6',
+      200: '#E5E7EB', // 구분선, 비활성화된 요소 등에 활용
     },
   },
   components: {
-    // 컴포넌트 스타일 오버라이드 (힙한 느낌 연출)
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '0px', // [포인트] 둥근 모서리를 없애거나 아주 적게(4px) 주어 엣지있는 느낌을 줍니다.
-          padding: '10px 24px', // 버튼을 크고 시원하게 만듭니다.
-          fontSize: '1rem',
-          boxShadow: 'none', // 그림자를 없애 플랫(Flat)하고 모던한 느낌을 줍니다.
-          border: '1px solid transparent', // 테두리 공간 확보
+          borderRadius: '4px', // 깔끔함과 엣지 사이의 적정선
+          boxShadow: 'none', // 플랫하고 모던한 느낌을 위한 그림자 제거
+          textTransform: 'none', // 대문자 변환 방지 (가독성 향상)
           '&:hover': {
-            boxShadow: 'none', // 호버 시에도 그림자 제거
-            backgroundColor: 'transparent', // [변경] 호버 시 배경색 변화를 투명하게 막아 촌스러운 효과를 제거
+            boxShadow: 'none',
           },
         },
-        // 'outlined' 버튼 스타일 커스텀
-        outlined: {
-          borderColor: '#111111',
+        // [강화] Primary 버튼에 애시드 라임 스타일 명시적 적용
+        containedPrimary: {
+          color: '#111111', // 버튼의 텍스트 색상 (애시드 라임에 잘 보임)
+          backgroundColor: '#D2F802',
+          '&:hover': {
+            backgroundColor: '#A6C700', // primary.dark 사용
+          },
+          '&:active': {
+            backgroundColor: '#8C9E00', // 더욱 눌린 듯한 효과
+          },
+        },
+        // [추가] Outlined 버튼에 primary 색상 사용으로 일관성 유지
+        outlinedPrimary: {
           color: '#111111',
+          borderColor: '#D2F802',
           '&:hover': {
-            backgroundColor: '#111111',
-            color: '#D2F802', // 블랙 배경 + 형광 텍스트 반전 효과
-            borderColor: '#111111',
+            backgroundColor: 'rgba(210, 248, 2, 0.08)', // 애시드 라임 투명도 적용
+            borderColor: '#A6C700',
           },
         },
       },
     },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#FFFFFF', // 앱바를 흰색으로
-          color: '#111111', // 텍스트는 검정으로 (미니멀리즘)
-          boxShadow: 'none', // 그림자 제거
-          borderBottom: '1px solid #E5E7EB', // 하단에 얇은 선만 추가
-        },
-      },
-    },
+    // Paper(카드) 컴포넌트의 기본 그림자 제거로 깔끔함 강화
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundImage: 'none', // 다크모드 시 MUI 기본 그라데이션 제거
+          boxShadow: 'none',
+        },
+      },
+    },
+    // [추가] 아이콘 색상 기본값을 primary 텍스트 색상으로 설정
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: {
+          color: '#111111',
         },
       },
     },
