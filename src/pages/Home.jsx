@@ -13,7 +13,7 @@ function Home() {
 
   /**
    * @description 주어진 경로로 페이지를 이동하는 핸들러 함수를 반환합니다.
-   * @param {string} path - 이동할 라우팅 경로 ('/lab/nickname' 또는 '/lab/lotto')
+   * @param {string} path - 이동할 라우팅 경로 ('/lab/nickname', '/lab/lotto', '/lab/food')
    */
   const navigateToLab = (path) => () => {
     navigate(path);
@@ -69,7 +69,7 @@ function Home() {
         </Box>
 
         {/* 2-2. 로또 번호 연구 과제 */}
-        <Box sx={{ mb: 5 }}>
+        <Box sx={{ mb: 7 }}> {/* mb: 5 -> mb: 7로 수정하여 간격 확보 */}
           <Typography variant="h5" component="h3" gutterBottom sx={{ mb: 1.5 }}>
             제2 기록: 순수 난수 기반 확률 과정 모델링 연구 (Stochastic Process Modeling)
           </Typography>
@@ -84,6 +84,26 @@ function Home() {
               onClick={navigateToLab('/lab/lotto')}
             >
               로또 번호 연구 참여
+            </Button>
+          </Box>
+        </Box>
+
+        {/* 2-3. 식사 메뉴 연구 과제 (새로 추가) */}
+        <Box sx={{ mb: 5 }}>
+          <Typography variant="h5" component="h3" gutterBottom sx={{ mb: 1.5 }}>
+            제3 기록: 대중 선호도 기반 메뉴 최적화 결정 과정 연구 (Preference-Based Menu Optimization)
+          </Typography>
+          <Typography variant="body1" color="text.primary" sx={{ lineHeight: 1.7 }}>
+            총 128개의 광범위한 한국 대중 음식 데이터셋을 기반으로, 2의 제곱수(128강, 64강, 32강 등) 토너먼트 방식의 시뮬레이션을 통해 사용자 개개인의 <strong>최적화된 식사 메뉴 선택 과정</strong>을 모델링한 기록입니다. 이 연구는 선택의 기로에서 발생하는 심리적 요인과 '맛있는 음식'의 사회적 선호도 집약 현상을 탐구합니다. 각 단계의 메뉴 이미지는 사용자의 선택에 대한 깊은 몰입을 유도하는 중요한 시각적 매개체 역할을 합니다.
+          </Typography>
+          {/* 식사 메뉴 연구 바로가기 버튼 */}
+          <Box sx={{ mt: 2, textAlign: 'right' }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={navigateToLab('/lab/food')}
+            >
+              식사 메뉴 연구 참여
             </Button>
           </Box>
         </Box>

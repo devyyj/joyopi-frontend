@@ -9,7 +9,8 @@ import Header from './components/Header.jsx'; //
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx'; // 메인 페이지
 import LottoResearch from './pages/LottoResearch.jsx'; // 새 페이지 import
-import NicknameResearch from './pages/NicknameResearch.jsx'; // 새 페이지 import
+import NicknameResearch from './pages/NicknameResearch.jsx';
+import FoodResearch from "./pages/FoodResearch.jsx"; // 새 페이지 import
 
 /**
  * @title 최상위 애플리케이션 컴포넌트
@@ -33,7 +34,7 @@ function App() {
           <Route path="/lab/lotto" element={<LottoResearch />} />
           {/* 닉네임 생성기 화면 */}
           <Route path="/lab/nickname" element={<NicknameResearch />} />
-
+          <Route path="/lab/food" element={<FoodResearch />} />
           {/* 매칭되는 경로가 없을 때의 처리는 필요에 따라 추가합니다. */}
         </Routes>
       </Box>

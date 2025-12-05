@@ -106,6 +106,11 @@ function Header() {
           >
             로또 번호 연구
           </MenuItem>
+          <MenuItem
+            onClick={() => handleMenuItemClick('/lab/food')}
+          >
+            식사 메뉴 연구
+          </MenuItem>
         </Menu>
 
         {/* 3. 빈 공간 */}
