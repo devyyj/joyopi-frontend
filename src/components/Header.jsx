@@ -90,13 +90,13 @@ function Header() {
           <MenuItem
             onClick={() => handleMenuItemClick('/lab/nickname')}
           >
-            닉네임
+            닉네임 연구
           </MenuItem>
           {/* 하위 메뉴: 로또 번호 */}
           <MenuItem
             onClick={() => handleMenuItemClick('/lab/lotto')}
           >
-            로또 번호
+            로또 번호 연구
           </MenuItem>
         </Menu>
 

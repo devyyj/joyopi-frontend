@@ -343,7 +343,7 @@ function LottoResearch() {
           {isGenerating ? (
             <Box display="flex" alignItems="center" justifyContent="center">
               <CircularProgress size={20} color="inherit" sx={{mr: 1}}/>
-              연구 중...
+              연구 진행 중...
             </Box>
           ) : (
             '연구 시작'
