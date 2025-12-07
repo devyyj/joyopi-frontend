@@ -1,9 +1,10 @@
-// src/theme.js
+// src/theme/theme.js
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
   typography: {
     fontFamily: [
+      '"Inter"',
       '"Pretendard"',
       '-apple-system',
       'BlinkMacSystemFont',
@@ -11,86 +12,171 @@ const theme = createTheme({
       'Roboto',
       'sans-serif',
     ].join(','),
+    h1: { fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF' },
+    h2: { fontWeight: 700, letterSpacing: '-0.01em', color: '#FFFFFF' },
+    h3: { fontWeight: 700, letterSpacing: '-0.01em', color: '#FFFFFF' },
+    h4: { fontWeight: 700, color: '#FFFFFF' },
+    h5: { fontWeight: 600, color: '#FFFFFF' },
+    h6: { fontWeight: 600, color: '#FFFFFF' },
     button: {
-      fontWeight: 700, // 버튼 텍스트 강조 (가독성/UX)
+      fontWeight: 600,
+      textTransform: 'none',
+      letterSpacing: '0.02em',
     },
+    subtitle1: { letterSpacing: '-0.01em', color: '#A1A1AA' },
+    body1: { letterSpacing: '-0.01em', lineHeight: 1.6, color: '#D4D4D8' },
+    body2: { letterSpacing: '-0.01em', color: '#A1A1AA' },
+    caption: { color: '#71717A' },
   },
   palette: {
-    mode: 'light',
-
+    mode: 'dark',
     primary: {
-      main: '#D2F802', // 애시드 라임 (핵심 액션/강조 색상)
-      light: '#E6FF50', // 살짝 밝게
-      dark: '#A6C700', // 살짝 어둡게 (호버 시 사용 가능)
-      contrastText: '#111111', // 대비되는 텍스트 색상 (검은색)
+      main: '#D2F802', // Acid Lime - Key accent
+      light: '#E2FC52',
+      dark: '#A6C700',
+      contrastText: '#000000',
     },
     secondary: {
-      main: '#111111', // 블랙 (주요 텍스트, 아이콘 등)
-      contrastText: '#FFFFFF', // 흰색
+      main: '#FFFFFF',
+      light: '#FFFFFF',
+      dark: '#CCCCCC',
+      contrastText: '#000000',
     },
-    // [강화] 깔끔한 모노크롬 디자인 유지를 위한 배경색 정의
     background: {
-      default: '#FFFFFF', // 앱의 주 배경색
-      paper: '#F7F7F7', // 카드/모달 등 컴포넌트 배경을 약간 톤 다운하여 대비 효과 (선택 사항: 원하시면 #FFFFFF 유지)
+      default: '#121212', // Deep Dark Grey
+      paper: '#1E1E1E',   // Slightly lighter for cards
     },
-    // [강화] 텍스트 가독성 최적화
     text: {
-      primary: '#111111', // 가장 중요한 텍스트
-      secondary: '#4B5563', // 보조 텍스트 (기존보다 조금 더 진하게 하여 가독성 향상)
+      primary: '#FFFFFF',
+      secondary: '#A1A1AA', // Zinc 400
+      disabled: '#52525B',  // Zinc 600
     },
-    // [추가] 회색 톤을 추가하여 UI 요소에 조화롭게 사용
     grey: {
-      50: '#F9FAFB',
-      100: '#F3F4F6',
-      200: '#E5E7EB', // 구분선, 비활성화된 요소 등에 활용
+      50: '#FAFAFA',
+      100: '#F4F4F5',
+      200: '#E4E4E7',
+      300: '#D4D4D8',
+      400: '#A1A1AA',
+      500: '#71717A',
+      600: '#52525B',
+      700: '#3F3F46',
+      800: '#27272A',
+      900: '#18181B',
     },
+    action: {
+      hover: 'rgba(210, 248, 2, 0.08)',
+      selected: 'rgba(210, 248, 2, 0.16)',
+    },
+    divider: 'rgba(255, 255, 255, 0.1)',
+  },
+  shape: {
+    borderRadius: 8, // Sharper, tech feel
   },
   components: {
-    MuiButton: {
+    MuiCssBaseline: {
       styleOverrides: {
-        root: {
-          borderRadius: '4px', // 깔끔함과 엣지 사이의 적정선
-          boxShadow: 'none', // 플랫하고 모던한 느낌을 위한 그림자 제거
-          textTransform: 'none', // 대문자 변환 방지 (가독성 향상)
-          '&:hover': {
-            boxShadow: 'none',
+        body: {
+          backgroundColor: '#121212',
+          scrollbarColor: '#3F3F46 #18181B',
+          '&::-webkit-scrollbar': {
+            width: '8px',
           },
-        },
-        // [강화] Primary 버튼에 애시드 라임 스타일 명시적 적용
-        containedPrimary: {
-          color: '#111111', // 버튼의 텍스트 색상 (애시드 라임에 잘 보임)
-          backgroundColor: '#D2F802',
-          '&:hover': {
-            backgroundColor: '#A6C700', // primary.dark 사용
+          '&::-webkit-scrollbar-track': {
+            background: '#18181B',
           },
-          '&:active': {
-            backgroundColor: '#8C9E00', // 더욱 눌린 듯한 효과
-          },
-        },
-        // [추가] Outlined 버튼에 primary 색상 사용으로 일관성 유지
-        outlinedPrimary: {
-          color: '#111111',
-          borderColor: '#D2F802',
-          '&:hover': {
-            backgroundColor: 'rgba(210, 248, 2, 0.08)', // 애시드 라임 투명도 적용
-            borderColor: '#A6C700',
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: '#3F3F46',
+            borderRadius: '4px',
           },
         },
       },
     },
-    // Paper(카드) 컴포넌트의 기본 그림자 제거로 깔끔함 강화
-    MuiPaper: {
+    MuiAppBar: {
       styleOverrides: {
         root: {
+          backgroundColor: 'rgba(18, 18, 18, 0.8)', // Glassmorphism base dark
+          backdropFilter: 'blur(16px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           boxShadow: 'none',
         },
       },
     },
-    // [추가] 아이콘 색상 기본값을 primary 텍스트 색상으로 설정
-    MuiSvgIcon: {
+    MuiButton: {
       styleOverrides: {
         root: {
-          color: '#111111',
+          borderRadius: 4, // Tech/Code feel
+          padding: '10px 24px',
+          boxShadow: 'none',
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            transform: 'translateY(-1px)',
+            boxShadow: '0 0 12px rgba(210, 248, 2, 0.2)', // Neon glow
+          },
+        },
+        containedPrimary: {
+          background: '#D2F802',
+          color: '#000000',
+          '&:hover': {
+            background: '#E2FC52',
+            boxShadow: '0 0 20px rgba(210, 248, 2, 0.4)', // Intense Neon glow
+          },
+        },
+        outlinedPrimary: {
+          borderWidth: '1px',
+          borderColor: '#D2F802',
+          color: '#D2F802',
+          '&:hover': {
+            borderWidth: '1px',
+            backgroundColor: 'rgba(210, 248, 2, 0.05)',
+            boxShadow: '0 0 12px rgba(210, 248, 2, 0.2)',
+          },
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          backgroundColor: '#1E1E1E',
+          backgroundImage: 'none',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          transition: 'border-color 0.3s ease, transform 0.3s ease',
+          '&:hover': {
+            borderColor: '#D2F802', // Highlight border on hover
+            transform: 'translateY(-4px)',
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#18181B', // Darker menu
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: 8,
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          margin: '4px 8px',
+          borderRadius: 4,
+          '&:hover': {
+            backgroundColor: 'rgba(210, 248, 2, 0.08)',
+            color: '#D2F802',
+          },
+          '&.Mui-selected': {
+            backgroundColor: 'rgba(210, 248, 2, 0.16)',
+            color: '#D2F802',
+          },
         },
       },
     },
@@ -98,3 +184,4 @@ const theme = createTheme({
 });
 
 export default theme;
+

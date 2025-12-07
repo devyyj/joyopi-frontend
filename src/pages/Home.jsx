@@ -1,135 +1,201 @@
 // src/pages/Home.jsx
 
 import React from 'react';
-import { Container, Typography, Box, Divider, Button } from '@mui/material';
+import { Container, Typography, Box, Button, Card, CardContent, Stack, Chip, Divider, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ScienceIcon from '@mui/icons-material/Science';
 
 /**
- * @title 메인 페이지 (Home Page)
- * @description 웹 서비스의 목표와 주요 연구 과제를 Yopisode(이야기/일기)의 한 부분인 '연구 기록' 컨셉으로 재미있게 소개합니다.
+ * @title 메인 페이지 (Home Page) - Research Lab Concept
  */
 function Home() {
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const navigate = useNavigate();
+  const theme = useTheme();
 
-  /**
-   * @description 주어진 경로로 페이지를 이동하는 핸들러 함수를 반환합니다.
-   * @param {string} path - 이동할 라우팅 경로 ('/lab/nickname', '/lab/lotto', '/lab/food')
-   */
-  const navigateToLab = (path) => () => {
-    navigate(path);
-  };
+  const episodes = [
+    {
+      id: 1,
+      title: 'Lexical Nomenclature',
+      subtitle: '어휘 조합 기반 명명법 최적화',
+      desc: '언어학적 빅데이터 코퍼스에서 추출된 400여 개의 데이터셋을 기반으로, 인지 부하를 최소화하고 독창성을 극대화하는 궁극의 닉네임을 생성합니다.',
+      path: '/lab/nickname',
+      tags: ['Algorithm', 'Naming'],
+    },
+    {
+      id: 2,
+      title: 'Stochastic Process',
+      subtitle: '순수 난수 기반 확률 과정 모델링',
+      desc: '1부터 45까지의 수 체계 내에서 발생하는 순수 난수의 패턴 및 확률 분포를 모델링하고, 시각적 스펙트럼으로 렌더링하여 무작위성의 본질을 탐구합니다.',
+      path: '/lab/lotto',
+      tags: ['Probability', 'Simulation'],
+    },
+    {
+      id: 3,
+      title: 'Menu Optimization',
+      subtitle: '대중 선호도 기반 메뉴 최적화',
+      desc: '128개의 광범위한 음식 데이터셋과 토너먼트 방식의 시뮬레이션을 통해, 사용자 개개인의 최적화된 선택 과정을 심층적으로 모델링합니다.',
+      path: '/lab/food',
+      tags: ['Selection', 'Tournament'],
+    },
+  ];
 
   return (
-    // Container: 콘텐츠의 최대 너비를 제한하여 가독성을 높입니다.
-    <Container maxWidth="md" sx={{ mt: 8, mb: 12, minHeight: '60vh' }}>
-      {/* 1. 웹 서비스 소개 (Hero Section) */}
-      <Box textAlign="center" sx={{ mb: 10 }}>
-        {/* H1: Yopisode 기록의 서문 */}
+    <Container maxWidth="lg" sx={{ mt: { xs: 8, md: 12 }, mb: 12, minHeight: '80vh' }}>
+
+      {/* 1. Hero Section */}
+      <Box sx={{ mb: 16, textAlign: 'center', animation: 'fadeIn 1s ease-out' }}>
+        <Chip
+          icon={<ScienceIcon sx={{ fontSize: '1rem !important', color: theme.palette.common.black }} />}
+          label="Research Lab v1.0"
+          sx={{
+            mb: 3,
+            fontWeight: 700,
+            bgcolor: 'primary.main',
+            color: 'common.black',
+            border: 'none',
+            fontSize: '0.875rem',
+            height: 32
+          }}
+        />
         <Typography
-          variant="h2"
+          variant="h1"
           component="h1"
-          gutterBottom
-          sx={{ mb: 2 }} // fontWeight="bold" 제거
+          sx={{
+            fontWeight: 800,
+            letterSpacing: '-0.03em',
+            mb: 3,
+            fontSize: { xs: '3rem', md: '5rem' },
+            lineHeight: 0.95,
+          }}
         >
-          Yopisode: 지극히 사적인 연구 기록
+          Yopisode
+          <br />
+          <Box component="span" sx={{ color: 'text.secondary', fontWeight: 600 }}>Archived</Box> Records
         </Typography>
-
-        {/* H5: 연구소의 목적 */}
-        <Typography variant="h5" color="text.secondary" paragraph sx={{ lineHeight: 1.8 }}>
-          본 페이지는 Yopisode(요피의 에피소드, 또는 일지) 중 <strong>미래의 가능성을 탐색하는 '연구 기록' 섹션</strong>의 서문을 담고 있습니다. 현재의 기록은 프론트엔드 환경에서 구현된 극히 단순하고 사소한 알고리즘을 기반으로 하지만, 각 기록은 지극히 개인적인 호기심과 성찰을 담은 지적 부산물입니다. 앞으로는 '이야기', '일지' 등 다양한 기록 형태가 추가되어 이 사적인 역사를 완성해 나갈 것입니다.
+        <Typography
+          variant="h6"
+          color="text.secondary"
+          sx={{
+            maxWidth: '600px',
+            mx: 'auto',
+            lineHeight: 1.6,
+            fontWeight: 400,
+            fontSize: { xs: '1rem', md: '1.25rem' }
+          }}
+        >
+          지극히 사적인 호기심에서 출발한 프론트엔드 연구 기록.<br />
+          우리는 일상의 사소한 선택과 우연을 <Box component="span" sx={{ color: 'primary.main', fontWeight: 600 }}>알고리즘</Box>으로 재해석합니다.
         </Typography>
       </Box>
 
-      <Divider sx={{ mb: 8 }} />
-
-      {/* 2. 주요 연구 과제 소개 섹션 */}
-      <Box sx={{ mt: 10 }}>
-        <Typography variant="h4" component="h2" gutterBottom sx={{ mb: 5, borderLeft: '4px solid #D2F802', pl: 2 }}>
-          현재 작성 중인 연구 기록 (Ongoing Episodes)
-        </Typography>
-
-        {/* 2-1. 닉네임 연구 과제 */}
-        <Box sx={{ mb: 7 }}>
-          <Typography variant="h5" component="h3" gutterBottom sx={{ mb: 1.5 }}>
-            제1 기록: 어휘 조합 기반 명명법 최적화 연구 (Lexical Nomenclature Optimization)
-          </Typography>
-          <Typography variant="body1" color="text.primary" sx={{ lineHeight: 1.7 }}>
-            언어학적 빅데이터 코퍼스에서 추출된 400여 개의 형용사 및 명사 데이터셋을 기반으로, 인간의 인지 부하를 최소화하고 독창성을 극대화하는 <strong>궁극의 명명법 조합</strong>을 탐구한 기록입니다. 생성된 닉네임은 단순한 무작위성을 넘어선 의미론적 연결 고리의 잠재력을 내포하고 있으며, 문자열 출력의 시간적 지연은 알고리즘의 깊은 연산 과정을 시뮬레이션하는, 지극히 중요한 순간을 포착합니다.
-          </Typography>
-          {/* 닉네임 연구 바로가기 버튼 */}
-          <Box sx={{ mt: 2, textAlign: 'right' }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={navigateToLab('/lab/nickname')}
-            >
-              닉네임 연구 참여
-            </Button>
-          </Box>
-        </Box>
-
-        {/* 2-2. 로또 번호 연구 과제 */}
-        <Box sx={{ mb: 7 }}> {/* mb: 5 -> mb: 7로 수정하여 간격 확보 */}
-          <Typography variant="h5" component="h3" gutterBottom sx={{ mb: 1.5 }}>
-            제2 기록: 순수 난수 기반 확률 과정 모델링 연구 (Stochastic Process Modeling)
-          </Typography>
-          <Typography variant="body1" color="text.primary" sx={{ lineHeight: 1.7 }}>
-            1부터 45까지의 수 체계 내에서 발생하는 순수 난수의 패턴 및 확률 분포를 모델링하고, 그 결과를 고속으로 시뮬레이션하는 과정에 대한 기록입니다. 생성된 각 표본은 시각적 미디어를 통해 로또 공 색상 스펙트럼을 활용하여 고해상도로 렌더링됩니다. 이 과정은 프론트엔드 환경에서 <strong>무작위성의 본질</strong>을 탐구하는 중대한 실험이며, 애니메이션 '짠' 효과는 그 미약한 결과 도출의 완결성을 상징합니다.
-          </Typography>
-          {/* 로또 번호 연구 바로가기 버튼 */}
-          <Box sx={{ mt: 2, textAlign: 'right' }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={navigateToLab('/lab/lotto')}
-            >
-              로또 번호 연구 참여
-            </Button>
-          </Box>
-        </Box>
-
-        {/* 2-3. 식사 메뉴 연구 과제 (새로 추가) */}
-        <Box sx={{ mb: 5 }}>
-          <Typography variant="h5" component="h3" gutterBottom sx={{ mb: 1.5 }}>
-            제3 기록: 대중 선호도 기반 메뉴 최적화 결정 과정 연구 (Preference-Based Menu Optimization)
-          </Typography>
-          <Typography variant="body1" color="text.primary" sx={{ lineHeight: 1.7 }}>
-            총 128개의 광범위한 한국 대중 음식 데이터셋을 기반으로, 2의 제곱수(128강, 64강, 32강 등) 토너먼트 방식의 시뮬레이션을 통해 사용자 개개인의 <strong>최적화된 식사 메뉴 선택 과정</strong>을 모델링한 기록입니다. 이 연구는 선택의 기로에서 발생하는 심리적 요인과 '맛있는 음식'의 사회적 선호도 집약 현상을 탐구합니다. 각 단계의 메뉴 이미지는 사용자의 선택에 대한 깊은 몰입을 유도하는 중요한 시각적 매개체 역할을 합니다.
-          </Typography>
-          {/* 식사 메뉴 연구 바로가기 버튼 */}
-          <Box sx={{ mt: 2, textAlign: 'right' }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={navigateToLab('/lab/food')}
-            >
-              식사 메뉴 연구 참여
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-
-      {/* 3. 하단 강조 문구 영역 (라임색 경계선으로 은은한 포인트 적용) */}
-      <Box sx={{ mt: 10, textAlign: 'center' }}>
-        <Box
-          sx={(theme) => ({
-            py: 2, // 상하 패딩 추가
-            px: 3, // 좌우 패딩 추가
-            borderTop: `2px solid ${theme.palette.primary.dark}`, // primary.dark(#A6C700) 상단 경계선
-            borderBottom: `2px solid ${theme.palette.primary.dark}`, // primary.dark(#A6C700) 하단 경계선
-            display: 'inline-block', // 내용만큼 너비 조정
-            maxWidth: '100%',
-          })}
-        >
-          <Typography
-            variant="h6"
-            color="text.primary" // 텍스트 색상은 검은색으로 유지하여 가독성 확보
+      {/* 2. Episode Cards (Grid Layout) */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+          gap: 4,
+          animation: 'slideUp 1s ease-out 0.2s backwards'
+        }}
+      >
+        {episodes.map((episode) => (
+          <Card
+            key={episode.id}
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              overflow: 'visible',
+            }}
           >
-            "이것은 단순한 웹 서비스가 아닌, 요피의 지적 호기심이 담긴 사적인 에피소드입니다."
-          </Typography>
-        </Box>
+            {/* Number Badge */}
+            <Box
+              sx={{
+                position: 'absolute',
+                top: -20,
+                right: 20,
+                fontSize: '4rem',
+                fontWeight: 900,
+                color: 'rgba(255,255,255,0.03)',
+                zIndex: 0,
+                lineHeight: 1,
+                fontFamily: 'monospace'
+              }}
+            >
+              0{episode.id}
+            </Box>
+
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 4, zIndex: 1 }}>
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="overline" color="primary.main" sx={{ fontWeight: 700, letterSpacing: '0.1em' }}>
+                  EPISODE 0{episode.id}
+                </Typography>
+                <Typography variant="h5" component="h3" sx={{ fontWeight: 700, mt: 1, mb: 0.5 }}>
+                  {episode.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  {episode.subtitle}
+                </Typography>
+              </Box>
+
+              <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 4, flexGrow: 1, lineHeight: 1.6 }}>
+                {episode.desc}
+              </Typography>
+
+              <Box sx={{ mt: 'auto' }}>
+                <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
+                  {episode.tags.map((tag) => (
+                    <Chip
+                      key={tag}
+                      label={tag}
+                      size="small"
+                      sx={{
+                        bgcolor: 'background.default',
+                        borderRadius: '4px',
+                        fontWeight: 500,
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'text.secondary'
+                      }}
+                    />
+                  ))}
+                </Stack>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate(episode.path)}
+                  sx={{ py: 1.5 }}
+                >
+                  Enter Lab
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        ))}
       </Box>
 
+      {/* 3. Footer Statement */}
+      <Box sx={{ mt: 16, textAlign: 'center', animation: 'fadeIn 1s ease-out 0.5s backwards' }}>
+        <Divider sx={{ mb: 8, maxWidth: '120px', mx: 'auto', borderColor: 'primary.main', borderWidth: 1, opacity: 0.3 }} />
+        <Typography variant="body1" color="text.secondary" sx={{ fontStyle: 'italic', opacity: 0.7 }}>
+          "This is not just a web service, but a <Box component="span" sx={{ fontWeight: 700, color: 'text.primary', borderBottom: `2px solid ${theme.palette.primary.main}` }}>private episode</Box> containing Yopi's intellectual curiosity."
+        </Typography>
+      </Box>
+
+      {/* Global CSS for Animations */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}
+      </style>
     </Container>
   );
 }

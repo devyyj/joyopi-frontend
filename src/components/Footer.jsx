@@ -1,41 +1,75 @@
 // src/components/Footer.jsx
 
 import React from 'react';
-import { Box, Typography, Container } from '@mui/material';
+import { Box, Typography, Container, useTheme, Divider, Link } from '@mui/material';
 
 /**
- * @title 웹 서비스 하단 푸터 컴포넌트
- * @description 저작권 정보 및 관련 링크를 표시하며, 디자인을 단조롭게 변경합니다.
+ * @title Web Service Footer Component
+ * @description Minimalist footer for the research lab.
  */
 function Footer() {
-  // 현재 연도를 동적으로 가져와 저작권 연도를 표시합니다.
+  const theme = useTheme();
   const currentYear = new Date().getFullYear();
 
   return (
-    // [단조로운 디자인 적용] 배경: 밝은 회색, 텍스트: 보조 텍스트 색상
     <Box
       component="footer"
-      sx={(theme) => ({
-        py: 3,
+      sx={{
+        py: 8,
         px: 2,
-        mt: 'auto', // 메인 콘텐츠가 적을 때 하단에 고정되도록 합니다.
-        backgroundColor: theme.palette.grey[100], // 밝은 회색 톤으로 변경
-      })}
+        mt: 'auto',
+        backgroundColor: 'background.default',
+        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+      }}
     >
       <Container maxWidth="lg">
-        <Typography
-          variant="body2"
-          color="text.secondary" // 보조 텍스트 색상(#4B5563) 적용하여 대비를 낮춥니다.
-          align="center"
+        <Box
+          display="flex"
+          flexDirection={{ xs: 'column', md: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'center', md: 'flex-start' }}
+          textAlign={{ xs: 'center', md: 'left' }}
+          gap={4}
         >
-          {'Powered by '}
-          {/* Joyopi 텍스트에서 Link 컴포넌트를 제거하고, Box component="span"으로 굵은 글씨 스타일만 유지했습니다. */}
-          <Box component="span" sx={{ fontWeight: 'bold' }}>
-            Joyopi
+          {/* Brand */}
+          <Box>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', mb: 1 }}
+            >
+              Yopi<Box component="span" sx={{ color: theme.palette.primary.main }}>sode</Box>
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 300 }}>
+              Private Research Records & Digital Experiments.
+              <br />Exploring the intersection of algorithm and serendipity.
+            </Typography>
           </Box>
-          {`. Copyright © ${currentYear}.`}
-        </Typography>
 
+          {/* Links (Example) */}
+          <Box display="flex" gap={4}>
+            <Box>
+              <Typography variant="subtitle2" color="text.primary" fontWeight={700} mb={2}>
+                Research
+              </Typography>
+              <Box display="flex" flexDirection="column" gap={1}>
+                <Link href="/lab/nickname" underline="hover" color="text.secondary" variant="body2">Nickname Analysis</Link>
+                <Link href="/lab/lotto" underline="hover" color="text.secondary" variant="body2">Lotto Stochastic</Link>
+                <Link href="/lab/food" underline="hover" color="text.secondary" variant="body2">Menu Optimization</Link>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+
+        <Divider sx={{ my: 4, borderColor: 'rgba(255, 255, 255, 0.05)' }} />
+
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems="center" gap={2}>
+          <Typography variant="caption" color="text.disabled">
+            © {currentYear} Joyopi. All rights reserved.
+          </Typography>
+          <Typography variant="caption" color="text.disabled">
+            v1.2.0 • Powered by Antigravity
+          </Typography>
+        </Box>
       </Container>
     </Box>
   );

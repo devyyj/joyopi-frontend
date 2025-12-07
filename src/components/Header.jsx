@@ -1,122 +1,143 @@
 // src/components/Header.jsx
 
-import React, {useState} from 'react';
-import {AppBar, Box, Button, Menu, MenuItem, Toolbar, Typography} from '@mui/material';
-import {useNavigate} from 'react-router-dom';
+import React, { useState } from 'react';
+import { AppBar, Box, Button, Menu, MenuItem, Toolbar, Typography, useTheme, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 /**
- * @title 웹 서비스 상단 헤더 컴포넌트
- * @description 로고 글씨 크기를 키우고, 연구소 메뉴를 드롭다운으로 구현하며, 디자인을 단조롭게 변경합니다.
+ * @title Web Service Header Component
+ * @description Modern glassmorphism header with Acid Lime accents.
  */
 function Header() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
-  // '연구소' 메뉴 관리를 위한 상태
+  // 'Lab' menu state
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  /**
-   * @description 로고/서비스명 클릭 시 메인 화면으로 이동합니다.
-   */
   const handleLogoClick = () => {
     navigate('/');
   };
 
-  /**
-   * @description '연구소' 버튼 클릭 시 메뉴를 엽니다.
-   * @param {React.MouseEvent<HTMLButtonElement>} event - 버튼 클릭 이벤트 객체
-   */
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  /**
-   * @description 메뉴를 닫습니다.
-   */
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
-  /**
-   * @description 메뉴 항목 클릭 시 페이지 이동 후 메뉴를 닫습니다.
-   * @param {string} path - 이동할 경로
-   */
   const handleMenuItemClick = (path) => {
     navigate(path);
     handleMenuClose();
   };
 
   return (
-    // 배경: 흰색, 텍스트: 검은색 유지
-    <AppBar position="static"
-            sx={(theme) => ({
-              backgroundColor: theme.palette.background.default, // 흰색 배경
-              color: theme.palette.text.primary, // 검은색 텍스트
-              // 얇은 하단 경계선 유지
-              boxShadow: '0 1px 0 0 rgba(0, 0, 0, 0.05)',
-            })}
-    >
-      <Toolbar>
-        {/* 1. 로고/서비스명 */}
-        {/*
-          [수정된 부분]
-          로고 텍스트 "Yopisode"를 <Typography> 내부에서 처리하며,
-          'Yopi' 부분만 강조하기 위해 <span> 태그를 사용하여 스타일을 지정합니다.
-          강조 스타일: 'Yopi'에 메인 색상(primary)을 적용하고 굵게 표시합니다.
-        */}
-        <Typography
-          variant="h4"
-          component="div"
-          onClick={handleLogoClick}
-          sx={{
-            cursor: 'pointer',
-            // color 설정을 제거하여 AppBar에 설정된 검은색 텍스트 색상을 상속받습니다.
-          }}
-        >
-          {/* 'Yopi' 강조 */}
-          <span style={{color: '#8BC34A', fontWeight: 'bold'}}>Yopi</span>
-          {/* 'sode'는 기존 텍스트 색상을 상속받음 */}
-          sode
-        </Typography>
-
-        {/* 2. '연구소' 메뉴 (드롭다운 버튼) */}
-        <Button
-          color="inherit"
-          onClick={handleMenuClick}
-          sx={{textTransform: 'none', mx: 1}}
-        >
-          연구 기록
-        </Button>
-
-        {/* '연구소' 드롭다운 메뉴 */}
-        <Menu
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleMenuClose}
-        >
-          {/* 하위 메뉴: 닉네임 */}
-          <MenuItem
-            onClick={() => handleMenuItemClick('/lab/nickname')}
+    <AppBar position="sticky" elevation={0} sx={{ top: 0, zIndex: 1100 }}>
+      <Container maxWidth="xl">
+        <Toolbar disableGutters sx={{ height: 64, justifyContent: 'space-between' }}>
+          {/* 1. Logo/Service Name */}
+          <Box
+            onClick={handleLogoClick}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              cursor: 'pointer',
+              userSelect: 'none',
+              transform: 'scale(1)',
+              transition: 'transform 0.2s ease',
+              '&:hover': { transform: 'scale(1.02)' }
+            }}
           >
-            닉네임 연구
-          </MenuItem>
-          {/* 하위 메뉴: 로또 번호 */}
-          <MenuItem
-            onClick={() => handleMenuItemClick('/lab/lotto')}
-          >
-            로또 번호 연구
-          </MenuItem>
-          <MenuItem
-            onClick={() => handleMenuItemClick('/lab/food')}
-          >
-            식사 메뉴 연구
-          </MenuItem>
-        </Menu>
+            <Typography
+              variant="h5"
+              component="div"
+              sx={{
+                fontWeight: 800,
+                letterSpacing: '-0.02em',
+                fontSize: '1.5rem',
+              }}
+            >
+              Yopi
+              <Box component="span" sx={{ color: theme.palette.primary.main, ml: 0.5 }}>
+                sode
+              </Box>
+            </Typography>
+          </Box>
 
-        {/* 3. 빈 공간 */}
-        <Box sx={{flexGrow: 1}}/>
+          {/* 2. Navigation & Actions */}
+          <Box display="flex" alignItems="center" gap={1}>
+            {/* Lab Menu Trigger */}
+            <Button
+              color="inherit"
+              onClick={handleMenuClick}
+              endIcon={<KeyboardArrowDownIcon sx={{ color: open ? theme.palette.primary.main : 'inherit', transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0)' }} />}
+              sx={{
+                fontWeight: 600,
+                fontSize: '0.95rem',
+                color: open ? theme.palette.primary.main : theme.palette.text.primary,
+                '&:hover': {
+                  color: theme.palette.primary.main,
+                  bgcolor: 'transparent'
+                },
+              }}
+            >
+              Research Lab
+            </Button>
 
-      </Toolbar>
+            {/* Lab Menu Dropdown */}
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleMenuClose}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              slotProps={{
+                paper: {
+                  elevation: 0,
+                  sx: {
+                    mt: 1.5,
+                    minWidth: 200,
+                    overflow: 'visible',
+                    bgcolor: (theme) => theme.palette.grey[900],
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5)',
+                    '&:before': {
+                      content: '""',
+                      display: 'block',
+                      position: 'absolute',
+                      top: 0,
+                      right: 28,
+                      width: 10,
+                      height: 10,
+                      bgcolor: (theme) => theme.palette.grey[900],
+                      borderTop: '1px solid rgba(255,255,255,0.1)',
+                      borderLeft: '1px solid rgba(255,255,255,0.1)',
+                      transform: 'translateY(-50%) rotate(45deg)',
+                      zIndex: 0,
+                    },
+                  },
+                }
+              }}
+            >
+              <MenuItem onClick={() => handleMenuItemClick('/lab/nickname')} sx={{ py: 1.5 }}>
+                <Box component="span" sx={{ mr: 1, color: theme.palette.primary.main }}>#01</Box>
+                Nickname Analysis
+              </MenuItem>
+              <MenuItem onClick={() => handleMenuItemClick('/lab/lotto')} sx={{ py: 1.5 }}>
+                <Box component="span" sx={{ mr: 1, color: theme.palette.primary.main }}>#02</Box>
+                Lotto Stochastic
+              </MenuItem>
+              <MenuItem onClick={() => handleMenuItemClick('/lab/food')} sx={{ py: 1.5 }}>
+                <Box component="span" sx={{ mr: 1, color: theme.palette.primary.main }}>#03</Box>
+                Menu Optimization
+              </MenuItem>
+            </Menu>
+          </Box>
+        </Toolbar>
+      </Container>
     </AppBar>
   );
 }
