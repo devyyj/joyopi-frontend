@@ -34,6 +34,7 @@ const Parrot = () => {
     const audioRef = useRef(null);
     const roleRef = useRef(role);
     const timerRef = useRef(null);
+    const heartbeatRef = useRef(null);
 
     // 정규식 정의
     const COUNT_REGEX = /^[1-9][0-9]?$|^100$/; // 1 ~ 100
@@ -49,9 +50,18 @@ const Parrot = () => {
         const socketUrl = `${protocol}//${host}/parrot-socket`;
 
         socketRef.current = new WebSocket(socketUrl);
-        socketRef.current.onopen = () => socketRef.current.send(JSON.stringify({ type: 'JOIN', role: role }));
+        socketRef.current.onopen = () => {
+            socketRef.current.send(JSON.stringify({ type: 'JOIN', role: role }));
+            // Start heartbeat
+            heartbeatRef.current = setInterval(() => {
+                if (socketRef.current?.readyState === WebSocket.OPEN) {
+                    socketRef.current.send(JSON.stringify({ type: 'PING' }));
+                }
+            }, 30000); // 30 seconds
+        };
         socketRef.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
+            if (data.type === 'PONG') return; // Ignore pong
             if (data.type === 'WELCOME') setMyId(data.sessionId);
             if (data.type === 'USER_LIST') setUsers(data.users);
             if (data.type === 'TRIGGER_SOUND') {
@@ -77,6 +87,7 @@ const Parrot = () => {
         };
 
         return () => {
+            if (heartbeatRef.current) clearInterval(heartbeatRef.current);
             if (socketRef.current) socketRef.current.close();
             stopPlayback();
         };
