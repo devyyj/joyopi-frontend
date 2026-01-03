@@ -51,7 +51,17 @@ jobs:
             ${{ env.DOCKER_REGISTRY_USER }}/joyopi-frontend:${{ steps.vars.outputs.IMAGE_TAG }}
           file: ./Dockerfile
 
-      # 4. EC2 배포 (SSH 접속 및 스크립트 실행)
+      # 4. 설정 파일 EC2로 복사 (docker-compose.yml, nginx.conf)
+      - name: Copy config files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          source: "docker-compose.yml,nginx.conf"
+          target: ${{ env.PROJECT_DIR }}
+
+      # 5. EC2 배포 (SSH 접속 및 스크립트 실행)
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -61,7 +71,7 @@ jobs:
           script: |
             cd ${{ env.PROJECT_DIR }}
             
-            # EC2의 docker compose에서 사용할 환경 변수 설정
+            # .env 파일 생성 및 업데이트
             echo "DOCKER_REGISTRY_USER=${{ env.DOCKER_REGISTRY_USER }}" > .env
             
             TAG="${{ steps.vars.outputs.IMAGE_TAG }}"
@@ -81,8 +91,10 @@ jobs:
             docker compose pull $SERVICE_NAME
             docker compose up -d --no-deps $SERVICE_NAME
             
-            # Nginx 컨테이너에게 설정 리로드 명령
-            docker exec nginx-ssl-web nginx -s reload
+            # Nginx 컨테이너가 실행 중인지 확인 후 설정 리로드
+            if [ "$(docker ps -q -f name=nginx-ssl-web)" ]; then
+              docker exec nginx-ssl-web nginx -s reload
+            fi
             
             # 사용하지 않는 Docker 이미지 정리
-            docker system prune -f
+            docker image prune -f
