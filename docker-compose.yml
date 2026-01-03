@@ -7,23 +7,25 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx-ssl-web
-    
+
     # 80번 포트와 443번 포트를 호스트와 연결
     ports:
       - "80:80"
       - "443:443"
-      
+
     # 중요한 볼륨 마운트 설정
     volumes:
       # 1. Nginx 설정 파일: 로컬 파일을 컨테이너 설정으로 사용
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
       # 2. 인증서 파일: Certbot과 공유하는 인증서 저장 경로
       - ./certbot/conf:/etc/letsencrypt # 인증서 및 SSL 설정 파일 마운트
       # 3. Certbot 검증 경로: Let's Encrypt 검증을 위한 웹 루트
       - ./certbot/www:/var/www/certbot
-      
+
     restart: always
-    
+    networks:
+      - app-network
+
     # Certbot 갱신 시 Nginx 설정 파일을 자동으로 다시 로드하도록 설정 (Best Practice)
     # Certbot이 갱신 성공 후 Nginx가 새로운 인증서를 로드하게 합니다.
     command: /bin/sh -c "while :; do sleep 6h & wait $!; nginx -s reload; done & nginx -g 'daemon off;'"
@@ -34,22 +36,22 @@ services:
   certbot:
     image: certbot/certbot
     container_name: certbot-renew
-    
+
     # Nginx와 동일한 볼륨 경로를 공유하여 인증서 파일을 읽고 쓸 수 있도록 합니다.
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-      
+
     # Nginx가 80 포트를 점유하고 있을 때 ACME 챌린지 검증을 위해 필요합니다.
     depends_on:
       - nginx
-      
+
     # 주기적 갱신 루프를 포함한 Entrypoint
     # --webroot 방식을 사용하여 Nginx 컨테이너를 중단하지 않고 갱신합니다.
-    entrypoint: "/bin/sh -c 'trap exit TERM; \
-      echo \"Starting renewal loop (every 12h)...\"; \
-      while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $!; done;'"
-      
+    entrypoint: "/bin/sh -c 'trap exit TERM; echo \"Starting renewal loop (every 12h)...\"; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $!; done;'"
+    networks:
+      - app-network
+
   # ----------------------------------------------------
   # 3. 개발 프론트엔드 서비스 (dev.joyopi.com)
   # ----------------------------------------------------
@@ -57,8 +59,10 @@ services:
     image: ${DOCKER_REGISTRY_USER}/joyopi-frontend:dev
     container_name: frontend-dev
     expose:
-      - "3000"
+      - "80"
     restart: always
+    networks:
+      - app-network
 
   # ----------------------------------------------------
   # 4. 운영 프론트엔드 서비스 (joyopi.com)
@@ -67,5 +71,11 @@ services:
     image: ${DOCKER_REGISTRY_USER}/joyopi-frontend:prod
     container_name: frontend-prod
     expose:
-      - "3001"
+      - "80"
     restart: always
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true

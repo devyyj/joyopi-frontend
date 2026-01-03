@@ -58,7 +58,7 @@ jobs:
           host: ${{ env.EC2_HOST }}
           username: ${{ env.EC2_USER }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml,nginx.conf"
+          source: "docker-compose.yml,nginx-proxy.conf"
           target: ${{ env.PROJECT_DIR }}
 
       # 5. EC2 배포 (SSH 접속 및 스크립트 실행)
@@ -91,8 +91,12 @@ jobs:
             docker compose pull $SERVICE_NAME
             docker compose up -d --no-deps $SERVICE_NAME
             
-            # Nginx 컨테이너가 실행 중인지 확인 후 설정 리로드
-            if [ "$(docker ps -q -f name=nginx-ssl-web)" ]; then
+            # Nginx 프록시 컨테이너 상태 확인 및 실행
+            if [ ! "$(docker ps -q -f name=nginx-ssl-web)" ]; then
+              echo "Starting Nginx Proxy container..."
+              docker compose up -d nginx
+            else
+              echo "Nginx Proxy is already running, reloading config..."
               docker exec nginx-ssl-web nginx -s reload
             fi
             

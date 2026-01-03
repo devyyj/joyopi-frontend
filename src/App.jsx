@@ -7,6 +7,7 @@ import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
+import Parrot from './pages/Parrot.jsx';
 
 /**
  * @title 최상위 애플리케이션 컴포넌트
@@ -19,6 +20,7 @@ function App() {
       <Box component="main" sx={{ flexGrow: 1 }}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/parrot" element={<Parrot />} />
         </Routes>
       </Box>
       <Footer />

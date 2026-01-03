@@ -13,19 +13,16 @@ function Footer() {
     <Box
       component="footer"
       sx={(theme) => ({
-        py: 3,
+        py: { xs: 4, md: 6 },
         px: 2,
         mt: 'auto',
-        backgroundColor: theme.palette.grey[100],
+        borderTop: `1px solid ${theme.palette.divider}`,
+        backgroundColor: '#FFFFFF',
       })}
     >
       <Container maxWidth="lg">
-        <Typography variant="body2" color="text.secondary" align="center">
-          {'Powered by '}
-          <Box component="span" sx={{ fontWeight: 'bold' }}>
-            Joyopi
-          </Box>
-          {`. Copyright © ${currentYear}.`}
+        <Typography variant="body2" color="text.secondary" align="center" sx={{ fontWeight: 500, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+          © {currentYear} <Box component="span" sx={{ fontWeight: 800, color: 'text.primary' }}>JOYOPI</Box>. ALL RIGHTS RESERVED.
         </Typography>
       </Container>
     </Box>
