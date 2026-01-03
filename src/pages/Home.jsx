@@ -2,14 +2,13 @@
 
 import React from 'react';
 import { Container, Typography, Box, Button, CircularProgress, Alert } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-/**
- * @title 메인 페이지 (Home Page)
- */
 function Home() {
   const [message, setMessage] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
+  const navigate = useNavigate();
 
   const handleCallApi = async () => {
     setLoading(true);
@@ -17,51 +16,56 @@ function Home() {
     setMessage('');
     try {
       const response = await fetch('/api/test/hello');
-      if (!response.ok) {
-        throw new Error('API 호출 실패');
-      }
+      if (!response.ok) throw new Error('ERR');
       const data = await response.text();
       setMessage(data);
     } catch (err) {
-      setError(err.message || '오류가 발생했습니다.');
+      setError(err.message || 'ERR');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 8, mb: 12, minHeight: '60vh' }}>
-      <Box textAlign="center">
-        <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-          홈 페이지
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          새로운 프로젝트를 시작하세요. 배포 환경(Nginx)과 로컬(Vite Proxy) 환경을 지원합니다.
-        </Typography>
+    <Container maxWidth="lg" sx={{ mt: { xs: 12, md: 20 }, textAlign: 'center' }}>
+      <Typography
+        variant="h1"
+        sx={{
+          fontWeight: 900,
+          letterSpacing: '-3px',
+          fontSize: { xs: '3.5rem', md: '7rem' },
+          lineHeight: 1,
+          mb: 8,
+          color: 'text.primary'
+        }}
+      >
+        JOYOPI
+      </Typography>
 
-        <Box sx={{ mt: 4, p: 4, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={handleCallApi}
-            disabled={loading}
-            sx={{ px: 4, py: 1.5, borderRadius: '20px' }}
-          >
-            {loading ? <CircularProgress size={24} color="inherit" /> : '백엔드 API 호출'}
-          </Button>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center', alignItems: 'center' }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="large"
+          onClick={handleCallApi}
+          disabled={loading}
+          sx={{ py: 2, px: 6, borderRadius: '40px' }}
+        >
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'START'}
+        </Button>
+        <Button
+          variant="outlined"
+          size="large"
+          onClick={() => navigate('/parrot')}
+          sx={{ py: 2, px: 6, borderRadius: '40px', color: 'text.primary', borderColor: 'divider' }}
+        >
+          PARROT
+        </Button>
+      </Box>
 
-          {message && (
-            <Alert severity="success" sx={{ mt: 3, justifyContent: 'center' }}>
-              응답 메시지: <strong>{message}</strong>
-            </Alert>
-          )}
-
-          {error && (
-            <Alert severity="error" sx={{ mt: 3, justifyContent: 'center' }}>
-              {error}
-            </Alert>
-          )}
-        </Box>
+      <Box sx={{ mt: 8, maxWidth: '500px', mx: 'auto' }}>
+        {message && <Alert severity="success" sx={{ borderRadius: 4 }}>{message}</Alert>}
+        {error && <Alert severity="error" sx={{ borderRadius: 4 }}>{error}</Alert>}
       </Box>
     </Container>
   );
