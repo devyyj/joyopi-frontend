@@ -28,6 +28,7 @@ const Parrot = () => {
     const [duration, setDuration] = useState('1'); // minutes
     const [status, setStatus] = useState({ playing: false, message: '대기 중' });
     const [remaining, setRemaining] = useState(null);
+    const [myId, setMyId] = useState(null);
 
     const socketRef = useRef(null);
     const audioRef = useRef(null);
@@ -44,16 +45,35 @@ const Parrot = () => {
 
     useEffect(() => {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const host = window.location.hostname;
-        const socketUrl = `${protocol}//${host}:8080/parrot-socket`;
+        const host = window.location.host;
+        const socketUrl = `${protocol}//${host}/parrot-socket`;
 
         socketRef.current = new WebSocket(socketUrl);
         socketRef.current.onopen = () => socketRef.current.send(JSON.stringify({ type: 'JOIN', role: role }));
         socketRef.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
+            if (data.type === 'WELCOME') setMyId(data.sessionId);
             if (data.type === 'USER_LIST') setUsers(data.users);
-            if (data.type === 'TRIGGER_SOUND' && roleRef.current === 'PARROT') startPlayback(data);
-            if (data.type === 'STOP_SOUND' && roleRef.current === 'PARROT') stopPlayback();
+            if (data.type === 'TRIGGER_SOUND') {
+                if (roleRef.current === 'PARROT') {
+                    startPlayback(data);
+                } else {
+                    startMonitoring(data);
+                }
+            }
+            if (data.type === 'STOP_SOUND') stopPlayback();
+            if (data.type === 'PROGRESS_UPDATE') {
+                if (roleRef.current !== 'PARROT') {
+                    if (data.remainingCount !== undefined) {
+                        setRemaining(`${data.remainingCount}회 남음`);
+                    } else if (data.remainingDuration !== undefined) {
+                        setRemaining(`${data.remainingDuration}분 남음`);
+                    }
+                    if (!status.playing) {
+                        setStatus({ playing: true, message: '재생 중' });
+                    }
+                }
+            }
         };
 
         return () => {
@@ -79,11 +99,25 @@ const Parrot = () => {
             let current = 0;
             const play = () => {
                 if (current < data.count) {
-                    audioRef.current.play();
                     current++;
-                    setRemaining(`${data.count - current}회 남음`);
+                    const remainingCount = data.count - current;
+                    setRemaining(`${remainingCount}회 남음`);
+
+                    // 재생 시작 시점에 진행 상황 전송 (즉시 동기화)
+                    if (socketRef.current?.readyState === WebSocket.OPEN) {
+                        socketRef.current.send(JSON.stringify({
+                            type: 'PROGRESS_UPDATE',
+                            remainingCount: remainingCount
+                        }));
+                    }
+
+                    audioRef.current.play();
                     audioRef.current.onended = play;
                 } else {
+                    // 모든 재생 완료 시 중지 신호 전송 -> 사용자 화면도 '대기 중'으로 전환
+                    if (socketRef.current?.readyState === WebSocket.OPEN) {
+                        socketRef.current.send(JSON.stringify({ type: 'STOP_SOUND' }));
+                    }
                     stopPlayback();
                 }
             };
@@ -100,6 +134,41 @@ const Parrot = () => {
             };
             play();
 
+            let timeLeft = data.duration * 60;
+            setRemaining(`${Math.ceil(timeLeft / 60)}분 남음`);
+            timerRef.current = setInterval(() => {
+                const prevMinutes = Math.ceil(timeLeft / 60);
+                timeLeft--;
+                const currentMinutes = Math.ceil(timeLeft / 60);
+
+                if (timeLeft <= 0) {
+                    stopPlayback();
+                } else {
+                    setRemaining(`${currentMinutes}분 남음`);
+                    // 분 단위가 바뀔 때만 서버에 업데이트 전송
+                    if (prevMinutes !== currentMinutes && socketRef.current?.readyState === WebSocket.OPEN) {
+                        socketRef.current.send(JSON.stringify({
+                            type: 'PROGRESS_UPDATE',
+                            remainingDuration: currentMinutes
+                        }));
+                    }
+                }
+            }, 1000);
+        }
+    };
+
+    const startMonitoring = (data) => {
+        stopPlayback();
+        setStatus({ playing: true, message: '재생 중' });
+
+        if (data.mode === 'COUNT') {
+            let current = 0;
+            current++;
+            setRemaining(`${data.count - current}회 남음`);
+
+            // COUNT 모드에서는 더 이상 추정치로 줄이지 않음 (서버의 PROGRESS_UPDATE 대기)
+            // 타임아웃 방지를 위해 polling이나 단순 대기 처리 (여기서는 아무것도 안 함)
+        } else {
             let timeLeft = data.duration * 60;
             setRemaining(`${Math.ceil(timeLeft / 60)}분 남음`);
             timerRef.current = setInterval(() => {
@@ -260,16 +329,30 @@ const Parrot = () => {
                         <PersonIcon fontSize="small" color="disabled" />
                     </Box>
                     <List dense sx={{ mb: 3 }}>
-                        {users.map((user) => (
-                            <ListItem key={user.id} sx={{ px: 0 }}>
-                                <ListItemText
-                                    primary={user.id.substring(0, 8)}
-                                    primaryTypographyProps={{ variant: 'body2', fontWeight: 600 }}
-                                    secondaryTypographyProps={{ component: 'div' }}
-                                    secondary={<Chip label={user.role === 'PARROT' ? '앵무새' : '사용자'} size="small" variant="outlined" sx={{ mt: 0.5, height: 20, fontSize: '0.65rem' }} />}
-                                />
-                            </ListItem>
-                        ))}
+                        {users.map((user) => {
+                            const isMe = user.id === myId;
+                            const isParrot = user.role === 'PARROT';
+                            let bgcolor = 'transparent';
+                            if (isMe) bgcolor = isParrot ? '#e8f5e9' : '#e3f2fd';
+
+                            return (
+                                <ListItem key={user.id} sx={{ px: 2, py: 1, mb: 1, borderRadius: 2, bgcolor: bgcolor, border: isMe ? 1 : 0, borderColor: isParrot ? 'success.main' : 'primary.main' }}>
+                                    <ListItemText
+                                        primary={
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <Typography variant="body2" fontWeight={600}>
+                                                    {user.id.substring(0, 8)}
+                                                </Typography>
+                                                {isMe && <Chip label="나" size="small" color={isParrot ? "success" : "primary"} sx={{ height: 20, fontSize: '0.65rem' }} />}
+                                            </Box>
+                                        }
+                                        primaryTypographyProps={{ component: 'div' }}
+                                        secondary={<Chip label={isParrot ? '앵무새' : '사용자'} size="small" variant="outlined" color={isParrot ? "success" : "default"} sx={{ mt: 0.5, height: 20, fontSize: '0.65rem' }} />}
+                                        secondaryTypographyProps={{ component: 'div' }}
+                                    />
+                                </ListItem>
+                            );
+                        })}
                     </List>
 
                     <Typography variant="caption" color="primary" sx={{ display: 'block', textAlign: 'center', fontWeight: 600, border: '1px dashed', borderColor: 'primary.main', p: 2, borderRadius: 2 }}>
