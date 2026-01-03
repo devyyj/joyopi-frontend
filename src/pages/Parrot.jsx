@@ -129,6 +129,9 @@ const Parrot = () => {
                     audioRef.current.play();
                     audioRef.current.onended = play;
                 } else {
+                    if (socketRef.current?.readyState === WebSocket.OPEN) {
+                        socketRef.current.send(JSON.stringify({ type: 'STOP_SOUND' }));
+                    }
                     stopPlayback();
                 }
             };
@@ -142,6 +145,9 @@ const Parrot = () => {
                 const currentMinutes = Math.ceil(timeLeft / 60);
 
                 if (timeLeft <= 0) {
+                    if (socketRef.current?.readyState === WebSocket.OPEN) {
+                        socketRef.current.send(JSON.stringify({ type: 'STOP_SOUND' }));
+                    }
                     stopPlayback();
                 } else {
                     setRemaining(`${currentMinutes}분 남음`);
