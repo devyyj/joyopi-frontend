@@ -58,7 +58,7 @@ jobs:
           host: ${{ env.EC2_HOST }}
           username: ${{ env.EC2_USER }}
           key: ${{ env.SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml,nginx.conf"
+          source: "docker-compose.yml,nginx-proxy.conf"
           target: ${{ env.PROJECT_DIR }}
 
       # 5. EC2 배포 (SSH 접속 및 스크립트 실행)
