@@ -175,14 +175,17 @@ function Vote() {
             // Snackbar 알림
             setSnackbar({ open: true, message: '🔔 당신의 차례입니다! 투표를 시작해 주세요.', severity: 'success' });
 
-            // 브라우저 알림 (권한이 있고, 탭이 활성화되지 않은 경우)
-            if (Notification.permission === 'granted' && document.hidden) {
-                new Notification('JOY OPI SECRET VOTE', {
-                    body: '당신의 차례입니다! 투표를 시작해 주세요.',
-                    icon: '/favicon.ico'
-                });
-            } else if (Notification.permission === 'default') {
-                Notification.requestPermission();
+            // 브라우저 알림 (API 지원 여부 확인 및 권한 체크)
+            if (typeof Notification !== 'undefined') {
+                if (Notification.permission === 'granted' && document.hidden) {
+                    new Notification('JOY OPI SECRET VOTE', {
+                        body: '당신의 차례입니다! 투표를 시작해 주세요.',
+                        icon: '/favicon.ico'
+                    });
+                } else if (Notification.permission === 'default') {
+                    // 참고: requestPermission은 보통 사용자 제스처(클릭 등) 내에서 호출해야 효과적입니다.
+                    Notification.requestPermission().catch(err => console.error('Notification permission request failed:', err));
+                }
             }
         }
 
@@ -540,8 +543,16 @@ function Vote() {
                                 fullWidth
                                 variant="outlined"
                                 onClick={() => {
-                                    navigator.clipboard.writeText(window.location.href);
-                                    setSnackbar({ open: true, message: '링크가 복사되었습니다!', severity: 'success' });
+                                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                                        navigator.clipboard.writeText(window.location.href).then(() => {
+                                            setSnackbar({ open: true, message: '링크가 복사되었습니다!', severity: 'success' });
+                                        }).catch(err => {
+                                            console.error('Clipboard copy failed:', err);
+                                            setSnackbar({ open: true, message: '복사에 실패했습니다. 직접 복사해 주세요.', severity: 'error' });
+                                        });
+                                    } else {
+                                        setSnackbar({ open: true, message: '브라우저가 복사 기능을 지원하지 않습니다.', severity: 'warning' });
+                                    }
                                 }}
                                 sx={{ borderRadius: 2 }}
                             >
