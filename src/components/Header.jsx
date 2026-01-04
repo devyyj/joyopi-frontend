@@ -51,7 +51,7 @@ function Header() {
             <Box sx={{ display: 'flex', gap: { xs: 0.5, sm: 1 } }}>
               <Button
                 color="inherit"
-                onClick={() => navigate('/parrot')}
+                onClick={() => navigate('/vote')}
                 sx={{
                   fontWeight: 700,
                   px: { xs: 2, sm: 3 },
@@ -61,7 +61,7 @@ function Header() {
                   }
                 }}
               >
-                PARROT
+                SECRET VOTE
               </Button>
             </Box>
           </Toolbar>

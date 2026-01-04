@@ -8,6 +8,7 @@ import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
 import Parrot from './pages/Parrot.jsx';
+import Vote from './pages/Vote.jsx';
 
 /**
  * @title 최상위 애플리케이션 컴포넌트
@@ -21,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/parrot" element={<Parrot />} />
+          <Route path="/vote" element={<Vote />} />
         </Routes>
       </Box>
       <Footer />

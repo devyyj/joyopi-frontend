@@ -126,7 +126,9 @@ const Parrot = () => {
             if (socketRef.current) {
                 socketRef.current.onclose = null; // Unmount 시 팝업 방지
                 socketRef.current.onerror = null;
-                socketRef.current.close();
+                if (socketRef.current.readyState === WebSocket.OPEN) {
+                    socketRef.current.close();
+                }
             }
             window.removeEventListener('offline', handleOffline);
             stopPlayback();
