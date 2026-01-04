@@ -12,7 +12,15 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/parrot-socket': {
-        target: 'ws://127.0.0.1:8080',
+        target: 'ws://localhost:8080',
+        ws: true,
+        changeOrigin: true,
+        onError: (err, req, res) => {
+          console.warn('WebSocket proxy error:', err);
+        }
+      },
+      '/vote-socket': {
+        target: 'ws://localhost:8080',
         ws: true,
         changeOrigin: true,
         onError: (err, req, res) => {

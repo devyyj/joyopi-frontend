@@ -14,11 +14,17 @@ import {
     Chip,
     TextField,
     Divider,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import PersonIcon from '@mui/icons-material/Person';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 const Parrot = () => {
     const [role, setRole] = useState('GENERAL');
@@ -29,12 +35,14 @@ const Parrot = () => {
     const [status, setStatus] = useState({ playing: false, message: '대기 중' });
     const [remaining, setRemaining] = useState(null);
     const [myId, setMyId] = useState(null);
+    const [showRefreshPopup, setShowRefreshPopup] = useState(false);
 
     const socketRef = useRef(null);
     const audioRef = useRef(null);
     const roleRef = useRef(role);
     const timerRef = useRef(null);
     const heartbeatRef = useRef(null);
+    const isConnectedRef = useRef(false);
 
     // 정규식 정의
     const COUNT_REGEX = /^[1-9][0-9]?$|^100$/; // 1 ~ 100
@@ -51,6 +59,7 @@ const Parrot = () => {
 
         socketRef.current = new WebSocket(socketUrl);
         socketRef.current.onopen = () => {
+            isConnectedRef.current = true;
             socketRef.current.send(JSON.stringify({ type: 'JOIN', role: role }));
             // Start heartbeat
             heartbeatRef.current = setInterval(() => {
@@ -58,6 +67,10 @@ const Parrot = () => {
                     socketRef.current.send(JSON.stringify({ type: 'PING' }));
                 }
             }, 30000); // 30 seconds
+        };
+
+        socketRef.current.onerror = (error) => {
+            console.error('WebSocket error:', error);
         };
         socketRef.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
@@ -86,9 +99,38 @@ const Parrot = () => {
             }
         };
 
+        socketRef.current.onclose = () => {
+            console.log('WebSocket connection closed');
+            if (heartbeatRef.current) {
+                clearInterval(heartbeatRef.current);
+                heartbeatRef.current = null;
+            }
+            if (isConnectedRef.current) {
+                setShowRefreshPopup(true);
+                isConnectedRef.current = false;
+            }
+        };
+
+        const handleOffline = () => {
+            console.log('Browser went offline');
+            if (isConnectedRef.current) {
+                setShowRefreshPopup(true);
+                isConnectedRef.current = false;
+            }
+        };
+
+        window.addEventListener('offline', handleOffline);
+
         return () => {
             if (heartbeatRef.current) clearInterval(heartbeatRef.current);
-            if (socketRef.current) socketRef.current.close();
+            if (socketRef.current) {
+                socketRef.current.onclose = null; // Unmount 시 팝업 방지
+                socketRef.current.onerror = null;
+                if (socketRef.current.readyState === WebSocket.OPEN) {
+                    socketRef.current.close();
+                }
+            }
+            window.removeEventListener('offline', handleOffline);
             stopPlayback();
         };
     }, []);
@@ -377,6 +419,36 @@ const Parrot = () => {
                     </Typography>
                 </Paper>
             </Box>
+
+            {/* 연결 종료 시 새로고침 안내 팝업 */}
+            <Dialog
+                open={showRefreshPopup}
+                aria-labelledby="refresh-dialog-title"
+                aria-describedby="refresh-dialog-description"
+                PaperProps={{
+                    sx: { borderRadius: 3, p: 1 }
+                }}
+            >
+                <DialogTitle id="refresh-dialog-title" sx={{ fontWeight: 700 }}>
+                    연결이 종료되었습니다
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="refresh-dialog-description">
+                        서버와의 연결이 끊어졌습니다. 서비스를 계속 이용하시려면 페이지를 새로고침 해주세요.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ p: 2, pt: 0 }}>
+                    <Button
+                        onClick={() => window.location.reload()}
+                        variant="contained"
+                        fullWidth
+                        startIcon={<RefreshIcon />}
+                        sx={{ borderRadius: 2, py: 1.5, fontWeight: 700 }}
+                    >
+                        새로고침 하기
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };
